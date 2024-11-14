@@ -53,7 +53,7 @@ def predictions_cr_ctr(input_data):
     df['PurchaseAmount'] = df['PurchaseAmount'].astype(int)
 
     # Load the saved OneHotEncoder
-    encoder = joblib.load('onehot_encoder.joblib')
+    encoder = joblib.load('models/onehot_encoder.joblib')
 
     # Columns to be one-hot encoded
     categorical_columns = ['AdPlatformName', 'AdPlatformType', 'AdTopic', 'AdType']
