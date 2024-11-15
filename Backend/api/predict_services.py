@@ -73,8 +73,8 @@ def predictions_cr_ctr(input_data):
     model_ctr = joblib.load('models/model_ctr.joblib')
 
     # Make predictions
-    cr_predictions = model_cr.predict(encoded_df)
-    ctr_predictions = model_ctr.predict(encoded_df)
+    cr_predictions = model_cr.predict(df)
+    ctr_predictions = model_ctr.predict(df)
 
     # Create response dictionary
     response = {
