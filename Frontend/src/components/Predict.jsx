@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import Navbar from './Navbar';
 
 const Predict = () => {
-  const [model1_inputs, setInputs1] = useState({Model: 'Model1'});
-  const [model2_inputs, setInputs2] = useState({Model: 'Model2'});
+  const [model1_inputs, setInputs1] = useState({Model: 'Model1', AdCost: '', PurchaseAmount: '', AdPlatformName: '', AdPlatformType: '', AdType: '', AdTopic: ''});
+  const [model2_inputs, setInputs2] = useState({Model: 'Model2', Age: '', Education_Level: '', Gender: '', Income_Level: '', Location: '', Occupation: ''});
   const [dropdownOptions, setDropdownOptions] = useState({});
   const [prediction1, setPrediction1] = useState('');
   const [prediction2, setPrediction2] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchDropdownOptions = async () => {
@@ -28,6 +29,10 @@ const Predict = () => {
       ...prevInputs,
       [name]: value,
     }));
+  };
+
+  const handleChange2 = (e) => {
+    const { name, value } = e.target;
     setInputs2((prevInputs) => ({
       ...prevInputs,
       [name]: value,
@@ -36,6 +41,22 @@ const Predict = () => {
 
   const handleSubmit1 = async (e) => {
     e.preventDefault();
+
+    // Check if all fields are filled
+    const allFieldsFilled = Object.values(model1_inputs).every((value) => value.trim() !== '');
+    if (!allFieldsFilled) {
+      setError('Please fill in all fields.');
+      return;
+    }
+
+    // Check if numerical fields have valid numbers
+    const numericalFields = ['AdCost', 'PurchaseAmount']; // Add other numerical fields if necessary
+    const allNumericalFieldsValid = numericalFields.every((field) => !isNaN(model1_inputs[field]) && model1_inputs[field].trim() !== '');
+    if (!allNumericalFieldsValid) {
+      setError('Please enter valid numerical values for Ad Cost and Purchase Amount.');
+      return;
+    }
+
     try {
       console.log(model1_inputs);
       const response = await fetch('http://localhost:8000/api/predict/', {
@@ -46,14 +67,25 @@ const Predict = () => {
         body: JSON.stringify({ model_inputs: model1_inputs }),
       });
       const data = await response.json();
-      setPrediction1(`Predicted CTR: ${data.ctr}%, Conversion Rate: ${data.conversionRate}%`);
+      // console.log(data, data[0], data[0]);
+      setPrediction1(`CTR: ${data[0]}\n Conversion Rate: ${data[1]}`);
+      setError(''); // Clear error message on successful submission
     } catch (error) {
       console.error('Error fetching prediction1:', error);
+      setError('Error fetching prediction. Please try again.');
     }
   };
 
   const handleSubmit2 = async (e) => {
     e.preventDefault();
+
+    // Check if all fields are filled
+    const allFieldsFilled = Object.values(model2_inputs).every((value) => value.trim() !== '');
+    if (!allFieldsFilled) {
+      setError('Please fill in all fields.');
+      return;
+    }
+
     try {
       console.log(model2_inputs);
       const response = await fetch('http://localhost:8000/api/predict/', {
@@ -66,8 +98,10 @@ const Predict = () => {
       const data = await response.json();
       console.log(data);
       setPrediction2(`Predicted Ad Topic: ${data.predicted_topics[0]}`);
+      setError(''); // Clear error message on successful submission
     } catch (error) {
       console.error('Error fetching prediction1:', error);
+      setError('Error fetching prediction. Please try again.');
     }
   };
 
@@ -155,7 +189,12 @@ const Predict = () => {
             </select>
             <button type="submit" className="bg-blue-500 text-white p-2 rounded w-full">Get Prediction</button>
           </form>
-          {prediction1 && <p className="text-xl font-bold">{prediction1}</p>}
+          {error && <p style={{ color: 'red' }}>{error}</p>}
+          {prediction1 && (
+            <p className="text-xl font-bold text-wrap" style={{ whiteSpace: 'pre' }}>
+              {prediction1}
+            </p>
+          )}
         </div>
         <div className="flex flex-col items-center justify-center min-h-screen pt-16 w-full">
           <h1 className="text-3xl font-bold mb-4">Predict Recommended Ad Topic</h1>
@@ -170,7 +209,7 @@ const Predict = () => {
             <select
               name="Age"
               value={model2_inputs.Age || ''}
-              onChange={handleChange}
+              onChange={handleChange2}
               className="border p-2 rounded w-full mb-2"
             >
               <option value="">Select Age</option>
@@ -181,9 +220,9 @@ const Predict = () => {
               ))}
             </select>
             <select
-              name="Education Level"
+              name="Education_Level"
               value={model2_inputs.Education_Level || ''}
-              onChange={handleChange}
+              onChange={handleChange2}
               className="border p-2 rounded w-full mb-2"
             >
               <option value="">Select Education Level</option>
@@ -196,7 +235,7 @@ const Predict = () => {
             <select
               name="Gender"
               value={model2_inputs.Gender || ''}
-              onChange={handleChange}
+              onChange={handleChange2}
               className="border p-2 rounded w-full mb-2"
             >
               <option value="">Select Gender</option>
@@ -207,9 +246,9 @@ const Predict = () => {
               ))}
             </select>
             <select
-              name="Income Level"
+              name="Income_Level"
               value={model2_inputs.Income_Level || ''}
-              onChange={handleChange}
+              onChange={handleChange2}
               className="border p-2 rounded w-full mb-2"
             >
               <option value="">Select Income Level</option>
@@ -222,7 +261,7 @@ const Predict = () => {
             <select
               name="Location"
               value={model2_inputs.Location || ''}
-              onChange={handleChange}
+              onChange={handleChange2}
               className="border p-2 rounded w-full mb-2"
             >
               <option value="">Select Location</option>
@@ -235,7 +274,7 @@ const Predict = () => {
             <select
               name="Occupation"
               value={model2_inputs.Occupation || ''}
-              onChange={handleChange}
+              onChange={handleChange2}
               className="border p-2 rounded w-full mb-2"
             >
               <option value="">Select Occupation</option>
@@ -247,6 +286,7 @@ const Predict = () => {
             </select>
             <button type="submit" className="bg-blue-500 text-white p-2 rounded w-full">Get Prediction</button>
           </form>
+          {error && <p style={{ color: 'red' }}>{error}</p>}
           {prediction2 && <p className="text-xl font-bold">{prediction2}</p>}
         </div>
       </div>

@@ -9,17 +9,17 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Configuration
-# SERVICE_ACCOUNT_FILE = "/app/credentials/ad-response-analysis-project-key2-9803513e2f0e.json"  # for docker
-SERVICE_ACCOUNT_FILE = "/home/vivek/DE-Project/Advertisement-Response-Analysis/credentials/ad-response-analysis-project-key2-9803513e2f0e.json"  # for without docker
+SERVICE_ACCOUNT_FILE = "/app/credentials/ad-response-analysis-project-key2-9803513e2f0e.json"  # for docker
+# SERVICE_ACCOUNT_FILE = "/home/vivek/DE-Project/Advertisement-Response-Analysis/credentials/ad-response-analysis-project-key2-9803513e2f0e.json"  # for without docker
 SPREADSHEET_ID = os.getenv("SPREADSHEET_ID")  
 RANGE_NAME = "Form Responses 1!A:S"  
-# LAST_PROCESSED_TIMESTAMP_FILE = "/app/tmp/last_processed_timestamp.txt"  # for without docker
-LAST_PROCESSED_TIMESTAMP_FILE = "/home/vivek/DE-Project/Advertisement-Response-Analysis/tmp/last_processed_timestamp.txt"  # for docker
+LAST_PROCESSED_TIMESTAMP_FILE = "/app/tmp/last_processed_timestamp.txt"  # for without docker
+# LAST_PROCESSED_TIMESTAMP_FILE = "/home/vivek/DE-Project/Advertisement-Response-Analysis/tmp/last_processed_timestamp.txt"  # for docker
 
 # client = pymongo.MongoClient("mongodb://172.31.99.238:27017")
-client = pymongo.MongoClient("mongodb://127.0.0.1:27017") # for without docker
+# client = pymongo.MongoClient("mongodb://127.0.0.1:27017") # for without docker
 # client = pymongo.MongoClient("mongodb://host.docker.internal:27017") # for docker on windows
-# client = pymongo.MongoClient("mongodb://172.17.0.1:27017") # for docker on linux (ubuntu)
+client = pymongo.MongoClient("mongodb://172.17.0.1:27017") # for docker on linux (ubuntu)
 
 db = client["advertisement_response_analysis"]
 
@@ -111,4 +111,5 @@ def load_new_entries():
             f.write(last_processed_timestamp)
 
 if __name__ == "__main__":
-    load_new_entries()
+    # load_new_entries()
+    pass

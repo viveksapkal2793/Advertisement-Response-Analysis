@@ -27,6 +27,14 @@ const Analyse = () => {
     fetchCombinations();
   }, []);
 
+  useEffect(() => { 
+    const cachedAnalysis = localStorage.getItem('cachedAnalysis');
+    if (cachedAnalysis) {
+      // console.log(cachedAnalysis);
+      setAnalysisResult(JSON.parse(cachedAnalysis));
+    } 
+  }, []);
+
   const getCookie = (name) => {
     const token = document.cookie
         .split('; ')
@@ -37,27 +45,30 @@ const Analyse = () => {
 
   const handleGetAnalysis = async () => {
     const csrfToken = getCookie('csrftoken'); 
-
-    if (!selectedCombination) {
-      console.error('No combination selected');
-      return;
-    }
-  
-    try {
-      const response = await fetch('http://127.0.0.1:8000/api/customchart/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': csrfToken,
-        },
-        
-        body: JSON.stringify({ chart_type: selectedCombination}),
-      });
-      const data = await response.json();
-      setAnalysisResult(data[0]);
-    } catch (error) {
-      console.error('Error fetching analysis:', error);
-    }
+    
+      if (!selectedCombination) {
+        console.error('No combination selected');
+        return;
+      }
+        try {
+        // console.log(selectedCombination);
+        const response = await fetch('http://127.0.0.1:8000/api/customchart/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken,
+          },
+          
+          body: JSON.stringify({ chart_type: selectedCombination}),
+        });
+        const data = await response.json();
+        // console.log(data);
+        setAnalysisResult(data[0]);
+        localStorage.setItem('cachedAnalysis', JSON.stringify(data[0]));
+        // console.log(analysisResult);
+      } catch (error) {
+        console.error('Error fetching analysis:', error);
+      }
   };
 
   const handleViewImage = (image) => {

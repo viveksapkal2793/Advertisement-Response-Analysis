@@ -6,6 +6,7 @@ from .dyn_chart_services import create_custom_chart, get_chart_names_list
 from django.shortcuts import render
 import json
 from .predict_services import predictions_cr_ctr, predictions_decision, get_dropdown_values
+from collections import OrderedDict
 
 @ensure_csrf_cookie
 def index(request):
@@ -61,12 +62,26 @@ def get_predict(request):
             # print(chart_type)
             if not model_inputs:
                 return JsonResponse({'error': 'No model_inputs provided'}, status=400)
-            print(model_inputs)
+            # print(model_inputs)
             if model_inputs['Model'] == 'Model1':
                 result = predictions_cr_ctr(model_inputs)
             else :
-                result = predictions_decision(model_inputs)
-            print(result)
+                # Create an OrderedDict to maintain the order of keys
+                ordered_inputs = OrderedDict()
+                
+                # Iterate through the original model_inputs and make key changes
+                for key, value in model_inputs.items():
+                    if key == 'Education_Level':
+                        ordered_inputs['Education Level'] = value
+                    elif key == 'Income_Level':
+                        ordered_inputs['Income Level'] = value
+                    else:
+                        ordered_inputs[key] = value
+
+                result = predictions_decision(ordered_inputs)
+
+            # print(result)
+
             return JsonResponse(result, safe=False)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)

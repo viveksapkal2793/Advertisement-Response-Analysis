@@ -9,18 +9,24 @@ const Home = () => {
   const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
+    const cachedImages = localStorage.getItem('images');
+    if (cachedImages) {
+      setImages(JSON.parse(cachedImages));
+    } else{
     // Fetch images from the backend
     const fetchImages = async () => {
       try {
         const response = await fetch('http://127.0.0.1:8000/api/chart/');
         const data = await response.json();
         setImages(data);
+        localStorage.setItem('images', JSON.stringify(data));
       } catch (error) {
         console.error('Error fetching images:', error);
       }
     };
 
     fetchImages();
+  }
   }, []);
 
   const handleViewImage = (image) => {

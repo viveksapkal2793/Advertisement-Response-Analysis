@@ -1,0 +1,14 @@
+Django>=4.2
+djangorestframework
+django-cors-headers
+scikit-learn
+numpy
+pandas
+matplotlib
+seaborn
+plotly
+requests
+joblib
+pymongo
+python-dotenv
+kaleido
